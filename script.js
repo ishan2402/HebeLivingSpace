@@ -1,14 +1,15 @@
-// Updated cart logic for Hebe LivingSpace
-// Features:
+// Updated cart logic with minimize/restore for Hebe LivingSpace
 // - quantity increment / decrement
 // - remove item
 // - no duplicate lines (increase qty instead)
 // - persisting cart in localStorage
+// - minimize / restore cart display (persisted)
 // - clears cart after checkout
 // - reads WA_PHONE and BRAND from config.json
 
 let CONFIG = { WA_PHONE: '919608018417', BRAND: 'Hebe LivingSpace' };
 const STORAGE_KEY = 'hebe_cart_v1';
+const MINIMIZED_KEY = 'hebe_cart_minimized';
 
 async function loadConfig(){
   try{
@@ -33,6 +34,10 @@ const primaryCTA = document.getElementById('primaryCTA');
 const secondaryCTA = document.getElementById('secondaryCTA');
 const shopCollections = document.getElementById('shopCollections');
 
+const minimizeBtn = document.getElementById('minimizeCart');
+const minimizedBar = document.getElementById('minimizedBar');
+const minCount = document.getElementById('minCount');
+
 let PRODUCTS = [];
 let cart = [];
 
@@ -45,6 +50,12 @@ function loadCart(){
     const raw = localStorage.getItem(STORAGE_KEY);
     cart = raw ? JSON.parse(raw) : [];
   } catch(e) { cart = []; }
+}
+function saveMinimized(state){
+  try { localStorage.setItem(MINIMIZED_KEY, state ? '1' : '0'); } catch(e){ }
+}
+function loadMinimized(){
+  try { return localStorage.getItem(MINIMIZED_KEY) === '1'; } catch(e){ return false; }
 }
 
 // ---------- Utilities ----------
@@ -154,7 +165,10 @@ function clearCart(){
 
 // ---------- Cart UI rendering ----------
 function updateCartUI(){
-  cartCount.textContent = cart.reduce((s, it) => s + Number(it.qty), 0);
+  const totalQty = cart.reduce((s, it) => s + Number(it.qty), 0);
+  cartCount.textContent = totalQty;
+  if(minCount) minCount.textContent = totalQty;
+
   cartItemsEl.innerHTML = '';
 
   if(cart.length === 0){
@@ -211,8 +225,45 @@ cartItemsEl.addEventListener('click', function(e){
 });
 
 // ---------- Cart toggle ----------
-cartToggle.addEventListener('click', ()=>{ cartSidebar.classList.toggle('visible'); });
+cartToggle.addEventListener('click', ()=>{ 
+  cartSidebar.classList.toggle('visible'); 
+  // if restoring from minimized, ensure full view
+  if(cartSidebar.classList.contains('minimized')){
+    // don't auto-expand when toggled, user can restore with minimizedBar or minimizeBtn
+  }
+});
 document.getElementById('closeCart').onclick = ()=> cartSidebar.classList.remove('visible');
+
+// ---------- Minimize / Restore ----------
+function minimizeCart(){
+  cartSidebar.classList.add('minimized');
+  saveMinimized(true);
+  // ensure minimized bar visible
+}
+function restoreCart(){
+  cartSidebar.classList.remove('minimized');
+  saveMinimized(false);
+}
+function toggleMinimize(){
+  if(cartSidebar.classList.contains('minimized')) restoreCart(); else minimizeCart();
+}
+
+if(minimizeBtn) minimizeBtn.addEventListener('click', (e)=>{
+  e.preventDefault();
+  toggleMinimize();
+});
+
+// clicking the minimized bar restores
+if(minimizedBar){
+  minimizedBar.addEventListener('click', (e)=>{
+    e.preventDefault();
+    restoreCart();
+    cartSidebar.classList.add('visible'); // open sidebar after restore
+  });
+  minimizedBar.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); restoreCart(); cartSidebar.classList.add('visible'); }
+  });
+}
 
 // ---------- Filters & search ----------
 document.getElementById('categoryFilter').onchange = function(){
@@ -239,7 +290,7 @@ function buildWhatsAppMessage(){
   lines.push('Address:');
   lines.push('Contact:');
   // encode line breaks for wa.me
-  return encodeURIComponent(lines.join('\\n'));
+  return encodeURIComponent(lines.join('\n'));
 }
 
 checkoutWA.addEventListener('click', ()=>{
@@ -248,7 +299,7 @@ checkoutWA.addEventListener('click', ()=>{
   // open WhatsApp and then clear cart locally (user still sees message sent in WA client)
   window.open(url, '_blank');
   // clear cart after initiating checkout
-  setTimeout(() => { clearCart(); }, 600); // small delay to ensure open() fires
+  setTimeout(() => { clearCart(); }, 600);
 });
 
 // quick chat buttons
@@ -270,6 +321,11 @@ primaryCTA.addEventListener('click', ()=>{ document.getElementById('categoryFilt
   // update brand text if present in DOM
   document.title = (CONFIG.BRAND || document.title);
   document.querySelectorAll('.brand').forEach(el=> el.textContent = CONFIG.BRAND || el.textContent);
+
+  // apply minimized state from storage
+  if(loadMinimized()){
+    cartSidebar.classList.add('minimized');
+  }
 
   loadCart();
   await loadProducts();
