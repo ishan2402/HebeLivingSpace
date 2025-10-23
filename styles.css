@@ -46,3 +46,68 @@ h1{font-size:1.9rem; margin:8px 0}
   .grid{grid-template-columns:1fr}
   h1{font-size:1.4rem}
 }
+/* ---------- Minimized cart styles ---------- */
+.cart-sidebar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100vh;
+  width: 360px;
+  background: #fff;
+  box-shadow: -12px 0 30px rgba(0,0,0,0.06);
+  padding: 16px;
+  transform: translateX(100%);
+  transition: transform .28s, width .28s;
+  overflow: visible;
+  display:flex;
+  flex-direction:column;
+  z-index:1000;
+}
+.cart-sidebar.visible{ transform: translateX(0); }
+
+/* minimized state */
+.cart-sidebar.minimized {
+  width: 72px;
+  padding: 12px 8px;
+  align-items: center;
+}
+.cart-sidebar.minimized .cart-head h4,
+.cart-sidebar.minimized .cart-items,
+.cart-sidebar.minimized .cart-footer {
+  display: none;
+}
+.minimized-bar{
+  display:none;
+  width:100%;
+  height:48px;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  cursor:pointer;
+  border-radius:8px;
+  background:linear-gradient(180deg, #f7f7f8, #ffffff);
+  box-shadow: 0 6px 14px rgba(18,18,20,0.04);
+}
+.cart-sidebar.minimized .minimized-bar{ display:flex; flex-direction:row; }
+
+.min-icon{ font-size:20px; }
+.min-count{
+  background:var(--accent);
+  color:#fff;
+  min-width:28px;
+  text-align:center;
+  padding:4px 8px;
+  border-radius:18px;
+  font-weight:700;
+  font-size:13px;
+}
+
+/* style for minimize button */
+.icon-btn{ background:transparent; border:none; font-size:16px; cursor:pointer }
+.icon-btn:hover{ opacity:0.85 }
+
+/* keep responsive behavior */
+@media(max-width:900px){
+  .cart-sidebar{ width:100% }
+  .cart-sidebar.minimized{ width:72px; right: 12px; top: 12px; height:auto; border-radius:12px }
+}
