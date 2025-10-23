@@ -1,5 +1,14 @@
-// Reads configuration from config.json so phone number and brand can be changed easily.
+// Updated cart logic for Hebe LivingSpace
+// Features:
+// - quantity increment / decrement
+// - remove item
+// - no duplicate lines (increase qty instead)
+// - persisting cart in localStorage
+// - clears cart after checkout
+// - reads WA_PHONE and BRAND from config.json
+
 let CONFIG = { WA_PHONE: '919608018417', BRAND: 'Hebe LivingSpace' };
+const STORAGE_KEY = 'hebe_cart_v1';
 
 async function loadConfig(){
   try{
@@ -11,6 +20,7 @@ async function loadConfig(){
   }
 }
 
+// DOM refs
 const productGrid = document.getElementById('productGrid');
 const cartCount = document.getElementById('cartCount');
 const cartSidebar = document.getElementById('cartSidebar');
@@ -25,8 +35,27 @@ const shopCollections = document.getElementById('shopCollections');
 
 let PRODUCTS = [];
 let cart = [];
-function fmt(x){ return "₹" + x.toLocaleString('en-IN') }
 
+// ---------- Persistence ----------
+function saveCart(){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(cart)); } catch(e){ console.warn('Failed to save cart', e); }
+}
+function loadCart(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    cart = raw ? JSON.parse(raw) : [];
+  } catch(e) { cart = []; }
+}
+
+// ---------- Utilities ----------
+function fmt(x){ return "₹" + Number(x).toLocaleString('en-IN'); }
+function findProduct(id){ return PRODUCTS.find(p => Number(p.id) === Number(id)); }
+function cartItemIndex(id){ return cart.findIndex(it => Number(it.id) === Number(id)); }
+function cartTotal(){
+  return cart.reduce((s, it) => s + (Number(it.price) * Number(it.qty)), 0);
+}
+
+// ---------- Product loading & rendering ----------
 async function loadProducts(){
   try{
     const res = await fetch('products.json');
@@ -48,15 +77,17 @@ function renderProducts(list){
       <div class="price">${fmt(p.price)}</div>
       <div style="margin-top:auto;display:flex;gap:8px">
         <button class="btn" data-id="${p.id}" onclick="openModal(${p.id})">Quick view</button>
-        <button class="btn primary" onclick="addToCartId(${p.id})">Add</button>
+        <button class="btn primary" data-id="${p.id}" onclick="addToCartId(${p.id})">Add</button>
       </div>
     `;
     productGrid.appendChild(card);
   });
 }
 
+// ---------- Modal ----------
 function openModal(id){
-  const p = PRODUCTS.find(x=>x.id===id);
+  const p = findProduct(id);
+  if(!p) return;
   document.getElementById('productModal').classList.remove('hidden');
   document.getElementById('modalBody').innerHTML = `
     <div style="display:flex;gap:12px;flex-wrap:wrap">
@@ -73,35 +104,117 @@ function openModal(id){
 }
 function closeModal(){ document.getElementById('productModal').classList.add('hidden'); window.currentProduct=null }
 document.getElementById('closeModal').onclick = closeModal;
+document.getElementById('addToCart').onclick = function(){
+  if(window.currentProduct) { addToCart(window.currentProduct, 1); closeModal(); }
+}
 
+// ---------- Cart operations ----------
 function addToCartId(id){
-  const p = PRODUCTS.find(x=>x.id===id);
-  cart.push({...p, qty:1});
+  const p = findProduct(id);
+  if(!p) return;
+  addToCart(p, 1);
+}
+
+function addToCart(product, qty){
+  qty = Number(qty) || 1;
+  const idx = cartItemIndex(product.id);
+  if(idx > -1){
+    cart[idx].qty = Number(cart[idx].qty) + qty;
+  } else {
+    cart.push({ id: product.id, title: product.title, price: Number(product.price), qty: qty, img: product.img });
+  }
+  saveCart();
   updateCartUI();
 }
-document.getElementById('addToCart').onclick = function(){
-  if(window.currentProduct) { cart.push({...window.currentProduct, qty:1}); updateCartUI(); closeModal(); }
+
+function setCartItemQty(id, qty){
+  qty = Number(qty);
+  const idx = cartItemIndex(id);
+  if(idx === -1) return;
+  if(qty <= 0){
+    removeCartItem(id);
+    return;
+  }
+  cart[idx].qty = qty;
+  saveCart();
+  updateCartUI();
 }
 
+function removeCartItem(id){
+  cart = cart.filter(it => Number(it.id) !== Number(id));
+  saveCart();
+  updateCartUI();
+}
+
+function clearCart(){
+  cart = [];
+  saveCart();
+  updateCartUI();
+}
+
+// ---------- Cart UI rendering ----------
 function updateCartUI(){
-  cartCount.textContent = cart.length;
+  cartCount.textContent = cart.reduce((s, it) => s + Number(it.qty), 0);
   cartItemsEl.innerHTML = '';
-  let total = 0;
-  cart.forEach((it, i)=>{
-    total += it.price * it.qty;
+
+  if(cart.length === 0){
+    cartItemsEl.innerHTML = '<div style="padding:12px;color:#666">Your cart is empty.</div>';
+    cartTotalEl.textContent = fmt(0);
+    return;
+  }
+
+  cart.forEach((it)=> {
     const row = document.createElement('div');
-    row.style.display='flex'; row.style.justifyContent='space-between'; row.style.gap='8px'; row.style.padding='8px 0';
-    row.innerHTML = `<div>${it.title} × ${it.qty}</div><div>${fmt(it.price*it.qty)}</div>`;
+    row.style.display='flex';
+    row.style.justifyContent='space-between';
+    row.style.alignItems='center';
+    row.style.gap='8px';
+    row.style.padding='8px 0';
+    row.dataset.id = it.id;
+
+    row.innerHTML = `
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600">${it.title}</div>
+        <div style="font-size:13px;color:#666;margin-top:6px">Unit: ${fmt(it.price)} • Subtotal: <strong>${fmt(it.price * it.qty)}</strong></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <button class="qty-btn" data-action="dec" data-id="${it.id}">−</button>
+          <div style="min-width:30px;text-align:center">${it.qty}</div>
+          <button class="qty-btn" data-action="inc" data-id="${it.id}">+</button>
+        </div>
+        <button class="remove-btn" data-id="${it.id}" style="font-size:12px;background:transparent;border:none;color:#d44;cursor:pointer">Remove</button>
+      </div>
+    `;
     cartItemsEl.appendChild(row);
   });
-  cartTotalEl.textContent = fmt(total);
+
+  cartTotalEl.textContent = fmt(cartTotal());
 }
 
-cartToggle.addEventListener('click', ()=>{ cartSidebar.classList.toggle('visible'); });
+// event delegation for cart buttons (inc/dec/remove)
+cartItemsEl.addEventListener('click', function(e){
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  if(btn.classList.contains('remove-btn')){
+    removeCartItem(id);
+    return;
+  }
+  if(btn.classList.contains('qty-btn')){
+    const action = btn.dataset.action;
+    const idx = cartItemIndex(id);
+    if(idx === -1) return;
+    if(action === 'inc') setCartItemQty(id, Number(cart[idx].qty) + 1);
+    if(action === 'dec') setCartItemQty(id, Number(cart[idx].qty) - 1);
+  }
+});
 
+// ---------- Cart toggle ----------
+cartToggle.addEventListener('click', ()=>{ cartSidebar.classList.toggle('visible'); });
 document.getElementById('closeCart').onclick = ()=> cartSidebar.classList.remove('visible');
 
-// Filters & search
+// ---------- Filters & search ----------
 document.getElementById('categoryFilter').onchange = function(){
   const val = this.value;
   const list = val === 'all' ? PRODUCTS : PRODUCTS.filter(x=>x.category===val);
@@ -112,36 +225,53 @@ document.getElementById('searchInput').oninput = function(){
   renderProducts(PRODUCTS.filter(p=> p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q)));
 };
 
-// WhatsApp click-to-chat builder (uses CONFIG.WA_PHONE)
+// ---------- WhatsApp checkout ----------
 function buildWhatsAppMessage(){
   if(cart.length===0) return encodeURIComponent('Hi, I am interested in your products. Please share details.');
-  let msg = 'New order%0A';
-  cart.forEach((it, i)=> msg += `${i+1}. ${it.title} x${it.qty} - ₹${it.price}%0A`);
-  const total = cart.reduce((s,i)=> s + i.price * i.qty, 0);
-  msg += `%0ATotal: ₹${total}%0AName:%0AAddress:%0AContact:`;
-  return msg;
+  let lines = [];
+  lines.push('New order');
+  cart.forEach((it, i)=> {
+    lines.push(`${i+1}. ${it.title} x${it.qty} - ₹${it.price * it.qty}`);
+  });
+  lines.push('');
+  lines.push(`Total: ₹${cartTotal()}`);
+  lines.push('Name:');
+  lines.push('Address:');
+  lines.push('Contact:');
+  // encode line breaks for wa.me
+  return encodeURIComponent(lines.join('\\n'));
 }
+
 checkoutWA.addEventListener('click', ()=>{
   const msg = buildWhatsAppMessage();
   const url = `https://wa.me/${CONFIG.WA_PHONE}?text=${msg}`;
+  // open WhatsApp and then clear cart locally (user still sees message sent in WA client)
   window.open(url, '_blank');
+  // clear cart after initiating checkout
+  setTimeout(() => { clearCart(); }, 600); // small delay to ensure open() fires
 });
+
+// quick chat buttons
 whatsappQuick.addEventListener('click', (e)=>{
   e.preventDefault();
-  const url = `https://wa.me/${CONFIG.WA_PHONE}?text=Hi%2C%20I%20want%20to%20know%20more%20about%20your%20products.`;
+  const url = `https://wa.me/${CONFIG.WA_PHONE}?text=${encodeURIComponent('Hi, I want to know more about your products.')}`;
   window.open(url, '_blank');
 });
 secondaryCTA.addEventListener('click', (e)=>{
   e.preventDefault();
-  window.open(`https://wa.me/${CONFIG.WA_PHONE}?text=Hello%2C%20I%20have%20a%20question%20about%20your%20products.`, '_blank');
+  window.open(`https://wa.me/${CONFIG.WA_PHONE}?text=${encodeURIComponent('Hello, I have a question about your products.')}`, '_blank');
 });
 shopCollections.addEventListener('click', ()=>{ document.getElementById('categoryFilter').value='all'; window.location='#products'; });
 primaryCTA.addEventListener('click', ()=>{ document.getElementById('categoryFilter').value='all'; window.location='#products'; });
 
-// Init: load config then content
+// ---------- Init ----------
 (async function init(){
   await loadConfig();
+  // update brand text if present in DOM
   document.title = (CONFIG.BRAND || document.title);
   document.querySelectorAll('.brand').forEach(el=> el.textContent = CONFIG.BRAND || el.textContent);
+
+  loadCart();
   await loadProducts();
+  updateCartUI();
 })();
