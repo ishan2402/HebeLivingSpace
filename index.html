@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hebe LivingSpace — Lifestyle & Garden Solutions</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Space-smart planters, racks, and storage solutions — enhance your living space beautifully. Order via WhatsApp."/>
+  <link rel="icon" href="images/favicon.svg" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#">Hebe LivingSpace</a>
+      <nav class="nav">
+        <a href="#products">Products</a>
+        <a href="#about">About</a>
+        <button id="cartToggle" class="cart-btn">🛒 <span id="cartCount">0</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="preheadline">For home owners who want beautiful, space-smart decor</p>
+        <h1 id="heroHeadline">Space-smart planters & storage for modern Indian homes</h1>
+        <p class="sub">Enhancing Everyday Living Spaces — Beautiful, durable pieces that make small spaces feel larger. Ready-to-ship nationwide — 5-minute quote.</p>
+        <div class="cta-row">
+          <a id="primaryCTA" class="btn primary" href="#products">Buy now</a>
+          <a id="shopCollections" class="btn ghost" href="#products">Shop collections</a>
+          <a class="btn ghost" id="secondaryCTA">Chat on WhatsApp</a>
+        </div>
+        <div class="trust-row">
+          <span>Trusted delivery • Fast 5-min quote • Certified maker</span>
+        </div>
+      </div>
+      <div class="hero-media">
+        <img src="images/hero-placeholder.svg" alt="Modular planters and storage" />
+      </div>
+    </div>
+  </section>
+
+  <main class="container">
+    <section id="products" class="products-section">
+      <div class="section-head">
+        <h2>Featured products</h2>
+        <div class="filters">
+          <select id="categoryFilter" aria-label="Filter by category">
+            <option value="all">All categories</option>
+            <option value="planter">Planters</option>
+            <option value="shelf">Shelves</option>
+            <option value="storage">Storage</option>
+          </select>
+          <input id="searchInput" placeholder="Search products..." aria-label="Search products" />
+        </div>
+      </div>
+
+      <div id="productGrid" class="grid" aria-live="polite"></div>
+    </section>
+
+    <section id="about" class="about">
+      <h3>Why shop with Hebe LivingSpace</h3>
+      <ul>
+        <li>Locally fabricated, weather-tested materials</li>
+        <li>Space-efficient designs tailored for Indian homes</li>
+        <li>Easy installation — support over WhatsApp</li>
+      </ul>
+      <div class="proofs">
+        <img src="images/factory.svg" alt="Factory" class="proof-img">
+        <div class="testimonials">
+          <blockquote>“Our balcony looks like a magazine — quick delivery!” — S. Kumar</blockquote>
+          <div class="stats">500+ monthly orders • Certified maker</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside id="cartSidebar" class="cart-sidebar" aria-hidden="true">
+    <div class="cart-head">
+      <h4>Your cart</h4>
+      <button id="closeCart" class="icon-btn">✖</button>
+    </div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-footer">
+      <div class="cart-total">Total: <span id="cartTotal">₹0</span></div>
+      <button id="checkoutWA" class="btn primary">Buy via WhatsApp</button>
+    </div>
+  </aside>
+
+  <div id="productModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <button id="closeModal" class="icon-btn modal-close">✖</button>
+      <div id="modalBody"></div>
+      <div class="modal-actions">
+        <button id="addToCart" class="btn primary">Add to cart</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>© Hebe LivingSpace — handcrafted & ready-to-ship</div>
+      <div class="footer-cta">
+        <a id="whatsappQuick" class="btn whatsapp" href="#" target="_blank" rel="noopener">WhatsApp us</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

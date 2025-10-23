@@ -1,0 +1,56 @@
+[
+  {
+    "id": 1,
+    "title": "Foldable Balcony Planter",
+    "price": 1299,
+    "category": "planter",
+    "img": "images/p1.svg",
+    "desc": "Space-saving planter with drainage.",
+    "lead_time": "5 mins quote"
+  },
+  {
+    "id": 2,
+    "title": "Stackable Storage Rack",
+    "price": 2499,
+    "category": "storage",
+    "img": "images/p2.svg",
+    "desc": "Powder-coated mild steel racks.",
+    "lead_time": "5 mins quote"
+  },
+  {
+    "id": 3,
+    "title": "Wall-mounted Herb Shelf",
+    "price": 899,
+    "category": "shelf",
+    "img": "images/p3.svg",
+    "desc": "Perfect for kitchen herbs.",
+    "lead_time": "5 mins quote"
+  },
+  {
+    "id": 4,
+    "title": "Vertical Garden Frame",
+    "price": 3499,
+    "category": "planter",
+    "img": "images/p4.svg",
+    "desc": "Holds 6 planters, modular.",
+    "lead_time": "5 mins quote"
+  },
+  {
+    "id": 5,
+    "title": "Foldable Shoe Organizer",
+    "price": 799,
+    "category": "storage",
+    "img": "images/p5.svg",
+    "desc": "Lightweight & durable.",
+    "lead_time": "5 mins quote"
+  },
+  {
+    "id": 6,
+    "title": "Hanging Planter Trio",
+    "price": 599,
+    "category": "planter",
+    "img": "images/p6.svg",
+    "desc": "Three small planters for balconies.",
+    "lead_time": "5 mins quote"
+  }
+]
