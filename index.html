@@ -77,16 +77,27 @@
   </main>
 
   <aside id="cartSidebar" class="cart-sidebar" aria-hidden="true">
-    <div class="cart-head">
-      <h4>Your cart</h4>
-      <button id="closeCart" class="icon-btn">✖</button>
+  <div class="cart-head">
+    <h4>Your cart</h4>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="minimizeCart" class="icon-btn" title="Minimize cart">—</button>
+      <button id="closeCart" class="icon-btn" title="Close cart">✖</button>
     </div>
-    <div id="cartItems" class="cart-items"></div>
-    <div class="cart-footer">
-      <div class="cart-total">Total: <span id="cartTotal">₹0</span></div>
-      <button id="checkoutWA" class="btn primary">Buy via WhatsApp</button>
-    </div>
-  </aside>
+  </div>
+
+  <!-- Minimized bar (hidden when not minimized) -->
+  <div id="minimizedBar" class="minimized-bar" role="button" tabindex="0" title="Open cart">
+    <div class="min-icon">🛒</div>
+    <div id="minCount" class="min-count">0</div>
+  </div>
+
+  <div id="cartItems" class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total">Total: <span id="cartTotal">₹0</span></div>
+    <button id="checkoutWA" class="btn primary">Buy via WhatsApp</button>
+  </div>
+</aside>
+
 
   <div id="productModal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content">
