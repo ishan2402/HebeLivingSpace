@@ -128,12 +128,3 @@ h1{font-size:1.9rem; margin:8px 0}
   font-size: 1.1rem;
   color: var(--accent);
 }
-@media (max-width: 600px) {
-  .brand-text {
-    font-size: 1rem;
-  }
-  .brand .logo {
-    height: 36px;
-  }
-  
-}
