@@ -9,6 +9,8 @@ body{font-family:Inter, system-ui, Arial; margin:0; background:var(--bg); color:
 .site-header{background:linear-gradient(180deg,rgba(255,255,255,0.6),transparent); position:sticky; top:0; z-index:30; backdrop-filter: blur(4px)}
 .header-inner{display:flex; align-items:center; justify-content:space-between}
 .brand{font-weight:700; font-size:1.1rem; color:var(--accent); text-decoration:none}
+.brand.vertical { flex-direction: column; align-items: flex-start; }
+
 .nav a, .nav button{margin-left:12px; background:none; border:none; color:var(--muted); text-decoration:none; cursor:pointer}
 .hero{padding:36px 0}
 .hero-inner{display:grid; grid-template-columns:1fr 420px; gap:28px; align-items:center}
@@ -135,6 +137,5 @@ h1{font-size:1.9rem; margin:8px 0}
   .brand .logo {
     height: 36px;
   }
-  .brand.vertical { flex-direction: column; align-items: flex-start; }
-
+  
 }
