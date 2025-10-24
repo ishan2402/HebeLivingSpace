@@ -111,3 +111,28 @@ h1{font-size:1.9rem; margin:8px 0}
   .cart-sidebar{ width:100% }
   .cart-sidebar.minimized{ width:72px; right: 12px; top: 12px; height:auto; border-radius:12px }
 }
+/* --- Logo styling --- */
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  gap: 10px;
+}
+.brand .logo {
+  height: 44px;
+  width: auto;
+  display: block;
+}
+.brand-text {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+@media (max-width: 600px) {
+  .brand-text {
+    font-size: 1rem;
+  }
+  .brand .logo {
+    height: 36px;
+  }
+}
