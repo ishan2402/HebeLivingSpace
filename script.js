@@ -69,10 +69,11 @@ async function loadProducts(){
 
 function renderProducts(list){
   productGrid.innerHTML = '';
-  list.forEach(p=>{
-    const card = document.createElement('div'); card.className='card';
+  list.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
     card.innerHTML = `
-      <img src="${p.img}" alt="${p.title}">
+      <img src="${p.img}" alt="${p.title}" class="product-img" data-full="${p.img}">
       <div class="title">${p.title}</div>
       <div class="price">${fmt(p.price)}</div>
       <div style="margin-top:auto;display:flex;gap:8px">
@@ -81,6 +82,11 @@ function renderProducts(list){
       </div>
     `;
     productGrid.appendChild(card);
+  });
+
+  // Attach image click handlers
+  document.querySelectorAll('.product-img').forEach(img => {
+    img.addEventListener('click', () => openImageViewer(img.dataset.full));
   });
 }
 
@@ -242,4 +248,33 @@ primaryCTA.addEventListener('click', ()=>{ document.getElementById('categoryFilt
   loadCart();
   await loadProducts();
   updateCartUI();
+  // ====== Product Image Viewer ======
+const imageViewer = document.getElementById('imageViewer');
+const viewerImg = document.getElementById('viewerImg');
+const closeViewer = document.getElementById('closeViewer');
+
+function openImageViewer(src) {
+  viewerImg.src = src;
+  imageViewer.classList.remove('hidden');
+}
+
+function closeImageViewer() {
+  imageViewer.classList.add('hidden');
+  viewerImg.src = '';
+}
+
+if (closeViewer) closeViewer.addEventListener('click', closeImageViewer);
+
+// Close on clicking outside image
+if (imageViewer) {
+  imageViewer.addEventListener('click', (e) => {
+    if (e.target === imageViewer) closeImageViewer();
+  });
+}
+
+// Close on Esc key
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeImageViewer();
+});
+
 })();
