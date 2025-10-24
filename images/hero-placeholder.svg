@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#e8f6ec"/>
+  <g transform="translate(80,80)">
+    <rect x="0" y="0" width="440" height="640" rx="18" fill="#fff" stroke="#dfe9e4"/>
+    <text x="20" y="40" font-size="28" fill="#2b7a4b" font-family="Arial, sans-serif">Hebe LivingSpace</text>
+    <text x="20" y="90" font-size="20" fill="#4a4a4a" font-family="Arial, sans-serif">Lifestyle planters & storage</text>
+    <circle cx="920" cy="300" r="180" fill="#d1ecd6"/>
+  </g>
+</svg>

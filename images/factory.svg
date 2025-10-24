@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+  <rect width="1200" height="800" fill="#fffaf0"/>
+  <g fill="#c9d6c8">
+    <rect x="80" y="220" width="320" height="200" rx="6"/>
+    <rect x="440" y="180" width="260" height="260" rx="6"/>
+  </g>
+  <text x="80" y="460" font-size="20" fill="#4a4a4a">Factory / Workshop</text>
+</svg>
