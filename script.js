@@ -320,7 +320,22 @@ primaryCTA.addEventListener('click', ()=>{ document.getElementById('categoryFilt
   await loadConfig();
   // update brand text if present in DOM
   document.title = (CONFIG.BRAND || document.title);
-  document.querySelectorAll('.brand').forEach(el=> el.textContent = CONFIG.BRAND || el.textContent);
+  // Update only the brand text (keep img/logo intact)
+document.querySelectorAll('.brand').forEach(el => {
+  // find existing brand-text span
+  const textEl = el.querySelector('.brand-text');
+  if (textEl) {
+    textEl.textContent = CONFIG.BRAND || textEl.textContent;
+  } else {
+    // if no .brand-text exists, create one (without removing existing children like <img>)
+    const span = document.createElement('span');
+    span.className = 'brand-text';
+    span.textContent = CONFIG.BRAND || '';
+    // append after existing children (so logo remains)
+    el.appendChild(span);
+  }
+});
+
 
   // apply minimized state from storage
   if(loadMinimized()){
